@@ -1,11 +1,12 @@
 resource "azurerm_network_interface" "this" {
-  name                = var.name
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  for_each = var.nics
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
 
   ip_configuration {
-    name                          = var.ip_configuration_name
-    subnet_id                     = var.subnet_id
-    private_ip_address_allocation = var.private_ip_address_allocation
+    name                          = each.value.ip_configuration_name
+    subnet_id                     = each.value.subnet_id
+    private_ip_address_allocation = each.value.private_ip_address_allocation
   }
 }

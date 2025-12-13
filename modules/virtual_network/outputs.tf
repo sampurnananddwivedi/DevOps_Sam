@@ -1,7 +1,7 @@
-output "id" {
-  value = azurerm_virtual_network.this.id
+output "ids" {
+  value = { for k, vnet in azurerm_virtual_network.this : k => vnet.id }
 }
 
-output "name" {
-  value = azurerm_virtual_network.this.name
+output "names" {
+  value = { for k, vnet in azurerm_virtual_network.this : k => vnet.name }
 }

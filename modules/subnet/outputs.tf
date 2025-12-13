@@ -1,7 +1,7 @@
-output "id" {
-  value = azurerm_subnet.this.id
+output "ids" {
+  value = { for k, subnet in azurerm_subnet.this : k => subnet.id }
 }
 
-output "name" {
-  value = azurerm_subnet.this.name
+output "names" {
+  value = { for k, subnet in azurerm_subnet.this : k => subnet.name }
 }

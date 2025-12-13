@@ -1,9 +1,7 @@
-variable "name" {
-  description = "The name of the resource group."
-  type        = string
-}
-
-variable "location" {
-  description = "The Azure location."
-  type        = string
+variable "resource_groups" {
+  description = "List of resource group objects. Each object must have 'name' and 'location'."
+  type = map(object({
+    name     = string
+    location = string
+  }))
 }

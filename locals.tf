@@ -1,44 +1,149 @@
 locals {
-  # Map subnets to their address prefixes
+  # Define subnet mapping (one per VM)
   subnets = {
-    for idx, name in var.subnet_names :
-    name => {
-      name            = name
-      address_prefix  = var.subnet_address_prefixes[idx]
+    subnet1 = {
+      name                = "subnet-1"
+      resource_group_name = var.resource_group_name
+      virtual_network_name = var.virtual_network_name
+      address_prefix      = "10.0.1.0/24"
+    }
+    subnet2 = {
+      name                = "subnet-2"
+      resource_group_name = var.resource_group_name
+      virtual_network_name = var.virtual_network_name
+      address_prefix      = "10.0.2.0/24"
+    }
+    subnet3 = {
+      name                = "subnet-3"
+      resource_group_name = var.resource_group_name
+      virtual_network_name = var.virtual_network_name
+      address_prefix      = "10.0.3.0/24"
     }
   }
-
-  # Map NICs to subnets and config
+  # Map each NIC to a subnet
   nics = {
-    for idx, name in var.nic_names :
-    name => {
-      name                   = name
-      location               = var.resource_group_location
-      resource_group_name    = var.resource_group_name
-      ip_configuration_name  = var.nic_ip_configuration_names[idx]
-      subnet_id              = local.subnets[var.subnet_names[idx]].name
-      private_ip_address_allocation = var.nic_private_ip_address_allocations[idx]
+    nic1 = {
+      name                         = "nic-1"
+      location           = var.location
+      resource_group_name = var.resource_group_name
+      ip_configuration_name         = "ipconfig1"
+      subnet_id                    = "subnet1"
+      private_ip_address_allocation = "Dynamic"
+    }
+    nic2 = {
+      name                         = "nic-2"
+      location           = var.location
+      resource_group_name = var.resource_group_name
+      ip_configuration_name         = "ipconfig2"
+      subnet_id                    = "subnet2"
+      private_ip_address_allocation = "Dynamic"
+    }
+    nic3 = {
+      name                         = "nic-3"
+      location           = var.location
+      resource_group_name = var.resource_group_name
+      ip_configuration_name         = "ipconfig3"
+      subnet_id                    = "subnet3"
+      private_ip_address_allocation = "Dynamic"
     }
   }
 
-  # Map VMs to NICs and config
+  # Map each VM to a NIC
   vms = {
-    for k, v in var.vm_configs :
-    k => {
-      name                        = k
-      resource_group_name         = var.resource_group_name
-      location                    = var.resource_group_location
-      size                        = v.size
-      admin_username              = v.admin_username
-      admin_password              = v.admin_password
-      network_interface_id        = local.nics[v.nic_name].name
-      os_disk_caching             = v.os_disk_caching
-      os_disk_storage_account_type= v.os_disk_storage_account_type
-      os_disk_name                = v.os_disk_name
-      image_publisher             = v.image_publisher
-      image_offer                 = v.image_offer
-      image_sku                   = v.image_sku
-      image_version               = v.image_version
+    vm1 = {
+      name                  = "vm-1"
+      resource_group_name   = var.resource_group_name
+      location              = var.location
+      size                  = var.vm_size
+      admin_username        = var.admin_username
+      admin_password        = var.admin_password
+      network_interface_id  = "nic1"
+      os_disk_caching       = "ReadWrite"
+      os_disk_storage_account_type = "Standard_LRS"
+      os_disk_name          = "osdisk1"
+      image_publisher       = var.image_publisher
+      image_offer           = var.image_offer
+      image_sku             = var.image_sku
+      image_version         = var.image_version
+    }
+    vm2 = {
+      name                  = "vm-2"
+      resource_group_name   = var.resource_group_name
+      location              = var.location
+      size                  = var.vm_size
+      admin_username        = var.admin_username
+      admin_password        = var.admin_password
+      network_interface_id  = "nic2"
+      os_disk_caching       = "ReadWrite"
+      os_disk_storage_account_type = "Standard_LRS"
+      os_disk_name          = "osdisk2"
+      image_publisher       = var.image_publisher
+      image_offer           = var.image_offer
+      image_sku             = var.image_sku
+      image_version         = var.image_version
+    }
+    vm3 = {
+      name                  = "vm-3"
+      resource_group_name   = var.resource_group_name
+      location              = var.location
+      size                  = var.vm_size
+      admin_username        = var.admin_username
+      admin_password        = var.admin_password
+      network_interface_id  = "nic3"
+      os_disk_caching       = "ReadWrite"
+      os_disk_storage_account_type = "Standard_LRS"
+      os_disk_name          = "osdisk3"
+      image_publisher       = var.image_publisher
+      image_offer           = var.image_offer
+      image_sku             = var.image_sku
+      image_version         = var.image_version
+    }
+  }
+
+  # Map two data disks per VM
+  data_disks = merge(
+    { for i in range(1, 4) :
+      "disk${2*i-1}" => {
+        name                 = "datadisk1-vm${i}"
+        location            = var.location
+        resource_group_name = var.resource_group_name
+        storage_account_type = "Standard_LRS"
+        disk_size_gb         = 32
+        vm_id                = "vm${i}"
+        lun                  = 0
+        caching              = "ReadOnly"
+      }
+    },
+    { for i in range(1, 4) :
+      "disk${2*i}" => {
+        name                 = "datadisk2-vm${i}"
+        location            = var.location
+        resource_group_name = var.resource_group_name
+        storage_account_type = "Standard_LRS"
+        disk_size_gb         = 32
+        vm_id                = "vm${i}"
+        lun                  = 1
+        caching              = "ReadOnly"
+      }
+    }
+  )
+}
+locals {
+  resource_groups = {
+    rg1 = {
+      name     = var.resource_group_name
+      location = var.location
+    }
+  }
+}
+
+locals {
+  virtual_networks= {
+    vnet1 = {
+      name                = var.virtual_network_name
+      resource_group_name = var.resource_group_name
+      location            = var.location
+      address_space       = var.virtual_network_address_space
     }
   }
 }

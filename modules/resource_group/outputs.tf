@@ -1,11 +1,11 @@
-output "name" {
-  value = azurerm_resource_group.this.name
+output "names" {
+  value = { for k, rg in azurerm_resource_group.this : k => rg.name }
 }
 
-output "location" {
-  value = azurerm_resource_group.this.location
+output "locations" {
+  value = { for k, rg in azurerm_resource_group.this : k => rg.location }
 }
 
-output "id" {
-  value = azurerm_resource_group.this.id
+output "ids" {
+  value = { for k, rg in azurerm_resource_group.this : k => rg.id }
 }

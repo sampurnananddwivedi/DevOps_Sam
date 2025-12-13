@@ -1,7 +1,7 @@
-output "id" {
-  value = azurerm_network_interface.this.id
+output "ids" {
+  value = { for k, nic in azurerm_network_interface.this : k => nic.id }
 }
 
-output "name" {
-  value = azurerm_network_interface.this.name
+output "names" {
+  value = { for k, nic in azurerm_network_interface.this : k => nic.name }
 }

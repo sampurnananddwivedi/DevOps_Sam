@@ -1,7 +1,7 @@
-output "id" {
-  value = azurerm_windows_virtual_machine.this.id
+output "ids" {
+  value = { for k, vm in azurerm_windows_virtual_machine.this : k => vm.id }
 }
 
-output "name" {
-  value = azurerm_windows_virtual_machine.this.name
+output "names" {
+  value = { for k, vm in azurerm_windows_virtual_machine.this : k => vm.name }
 }

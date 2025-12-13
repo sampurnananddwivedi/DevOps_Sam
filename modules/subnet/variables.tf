@@ -1,19 +1,10 @@
-variable "name" {
-  description = "The name of the subnet."
-  type        = string
+variable "subnets" {
+  description = "Map of subnet objects. Each object must have 'name', 'resource_group_name', 'virtual_network_name', and 'address_prefix'."
+  type = map(object({
+    name                = string
+    resource_group_name = string
+    virtual_network_name= string
+    address_prefix      = string
+  }))
 }
 
-variable "resource_group_name" {
-  description = "The name of the resource group."
-  type        = string
-}
-
-variable "virtual_network_name" {
-  description = "The name of the virtual network."
-  type        = string
-}
-
-variable "address_prefixes" {
-  description = "The address prefixes for the subnet."
-  type        = list(string)
-}

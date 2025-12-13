@@ -1,6 +1,7 @@
 resource "azurerm_virtual_network" "this" {
-  name                = var.name
-  address_space       = var.address_space
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  for_each            = var.virtual_networks
+  name                = each.value.name
+  address_space       = each.value.address_space
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
 }
